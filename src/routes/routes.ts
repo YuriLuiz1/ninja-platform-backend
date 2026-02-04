@@ -5,7 +5,7 @@ import {
   sendRegister,
 } from "../controllers/controllersCadastro";
 import { validationUser } from "../controllers/controllersLogin";
-import { getAllRomanceDb, postRomanceDb } from "../controllers/controllersAnimesRomance";
+import { getAllRomanceDb, postRomanceDb, updateRomanceDb } from "../controllers/controllersAnimesRomance";
 
 const router = Router();
 
@@ -19,8 +19,9 @@ router.delete("/admin/delete-user/:id", deleteUserDataBaseAdmin);
 // Rota da tela de login da plataforma
 router.post("/login", validationUser);
 
-//Rota dos animes
+//Rota dos animes Romance
 router.post("/send-romance", postRomanceDb);
 router.get("/get-romance", getAllRomanceDb);
+router.put("/atualiza-romance/:id", updateRomanceDb);
 
 export default router;

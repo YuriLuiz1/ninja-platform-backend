@@ -21,3 +21,21 @@ export async function getAllRomanceDb(req: Request, res: Response){
     .status(200)
     .json({ message: "All animes in catalog Romance: ", romanceSearch});
 }
+
+export async function updateRomanceDb(req: Request, res: Response){
+   const id = req.params.id as string;
+   const idNumber = parseInt(id);
+
+   if(!idNumber){
+    return res.status(400).json({ error: "ID not found!"})
+   }
+   
+   const updateRomance = await prisma.animesRomance.update({
+    where: { 
+        id: idNumber 
+    },
+    data: req.body
+   });
+
+   return res.status(200).json({ status: true, updateRomance });
+}
