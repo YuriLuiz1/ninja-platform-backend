@@ -3,7 +3,7 @@ import type { Request, Response } from "express";
 
 export async function searchAnimesRomance(req: Request, res: Response){
     try{
-    const axiosRes = await axios.get('http://localhost:3000/api/get-romance');
+    const axiosRes = await axios.get('https://ninja-platform-backend.onrender.com/');
 
     const animesCaptureds = await Promise.all(
         axiosRes.data.map(async (anime: any) => {
