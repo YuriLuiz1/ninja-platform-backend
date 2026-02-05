@@ -39,3 +39,15 @@ export async function updateRomanceDb(req: Request, res: Response){
 
    return res.status(200).json({ status: true, updateRomance });
 }
+
+export async function getIdRomance(req: Request, res: Response){
+  const { id } = req.params;
+
+  const anime = await prisma.animesRomance.findUnique({
+    where: { id: Number(id)}
+  });
+
+  if(!anime) return res.status(404).json({ error: "Anime not found!" });
+  
+  res.json(anime);
+}

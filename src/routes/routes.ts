@@ -5,7 +5,7 @@ import {
   sendRegister,
 } from "../controllers/controllersCadastro";
 import { validationUser } from "../controllers/controllersLogin";
-import { getAllRomanceDb, postRomanceDb, updateRomanceDb } from "../controllers/controllersAnimesRomance";
+import { getAllRomanceDb, getIdRomance, postRomanceDb, updateRomanceDb } from "../controllers/controllersAnimesRomance";
 
 const router = Router();
 
@@ -23,5 +23,6 @@ router.post("/login", validationUser);
 router.post("/send-romance", postRomanceDb);
 router.get("/get-romance", getAllRomanceDb);
 router.put("/atualiza-romance/:id", updateRomanceDb);
+router.get("/anime-romance/:id", getIdRomance);
 
 export default router;
