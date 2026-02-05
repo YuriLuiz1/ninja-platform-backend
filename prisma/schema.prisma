@@ -19,5 +19,6 @@ model AnimesRomance{
   title String
   average String
   synopisis String @db.Text
+  opinionNinja String? @db.Text
   capeImage String
 }
