@@ -17,14 +17,6 @@ app.use('/api', router);
 
 const port = Number(process.env.PORT) || 3000;
 
-const distPath = path.join(__dirname);
-
-app.use(express.static(distPath));
-
-app.get("/", (req: Request, res: Response) => {
-    res.sendFile(path.join(distPath, "browser"));
-})
-
 app.listen(port, "0.0.0.0", () => {
     console.log("Servidor escutando!");
 })
