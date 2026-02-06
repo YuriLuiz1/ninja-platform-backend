@@ -3,4 +3,6 @@ export interface IAnimes{
     average: string,
     synopisis: string,
     capeImage: string,
+    opinionNinja: string,
+    categoryId: number,
 }

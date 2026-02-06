@@ -5,7 +5,7 @@ import {
   sendRegister,
 } from "../controllers/controllersCadastro";
 import { validationUser } from "../controllers/controllersLogin";
-import { getAllRomanceDb, getIdRomance, postRomanceDb, updateRomanceDb } from "../controllers/controllersAnimesRomance";
+import { postAnimeDb, getAllAnimesDb, updateAnimeDb, getIdAnime } from "../controllers/controllersAnimesRomance";
 
 const router = Router();
 
@@ -20,9 +20,9 @@ router.delete("/admin/delete-user/:id", deleteUserDataBaseAdmin);
 router.post("/login", validationUser);
 
 //Rota dos animes Romance
-router.post("/send-romance", postRomanceDb);
-router.get("/get-romance", getAllRomanceDb);
-router.put("/atualiza-romance/:id", updateRomanceDb);
-router.get("/anime-romance/:id", getIdRomance);
+router.post("/send-anime", postAnimeDb);
+router.get("/get-anime", getAllAnimesDb);
+router.put("/atualiza-anime/:id", updateAnimeDb);
+router.get("/animes/:id", getIdAnime);
 
 export default router;
