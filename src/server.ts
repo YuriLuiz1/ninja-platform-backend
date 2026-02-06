@@ -21,7 +21,7 @@ const distPath = path.join(__dirname, "dist/crud");
 
 app.use(express.static(distPath));
 
-app.use((req: Request, res: Response) => {
+app.get("/*", (req: Request, res: Response) => {
     res.sendFile(path.join(distPath, "browser"));
 })
 
