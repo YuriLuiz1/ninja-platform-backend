@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 
 export async function postRomanceDb(req: Request, res: Response){
   const romanceContract: IAnimes = req.body;
-  const dataRomance = await prisma.animesRomance.create({
+  const dataRomance = await prisma.animes.create({
     data: romanceContract,
   })
   res
@@ -15,7 +15,7 @@ export async function postRomanceDb(req: Request, res: Response){
 }
 
 export async function getAllRomanceDb(req: Request, res: Response){
-    const romanceSearch = await prisma.animesRomance.findMany()
+    const romanceSearch = await prisma.animes.findMany()
 
     return res
     .status(200)
@@ -30,7 +30,7 @@ export async function updateRomanceDb(req: Request, res: Response){
     return res.status(400).json({ error: "ID not found!"})
    }
    
-   const updateRomance = await prisma.animesRomance.update({
+   const updateRomance = await prisma.animes.update({
     where: { 
         id: idNumber 
     },
@@ -43,7 +43,7 @@ export async function updateRomanceDb(req: Request, res: Response){
 export async function getIdRomance(req: Request, res: Response){
   const { id } = req.params;
 
-  const anime = await prisma.animesRomance.findUnique({
+  const anime = await prisma.animes.findUnique({
     where: { id: Number(id)}
   });
 

@@ -14,11 +14,19 @@ model Users {
   password String
 }
 
-model AnimesRomance{
-  id Int @id @default(autoincrement())
-  title String
-  average String
-  synopisis String @db.Text
+model Animes {
+  id           Int     @id @default(autoincrement())
+  title        String
+  average      String
+  synopisis    String  @db.Text
+  capeImage    String
   opinionNinja String? @db.Text
-  capeImage String
+  categoryId   Int?
+  category Category? @relation(fields: [categoryId], references: [id])
+}
+
+model Category {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+  animes Animes[]
 }
