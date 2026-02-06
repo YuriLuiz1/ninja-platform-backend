@@ -3,6 +3,7 @@ import router from "./routes/routes";
 import dotenv from "dotenv";
 import cors from "cors";
 import path from "path";
+import type { Request, Response } from "express";
 
 dotenv.config();
 
@@ -20,9 +21,9 @@ const distPath = path.join(__dirname, "dist/seu-projeto-angular");
 
 app.use(express.static(distPath));
 
-app.get("*", (req, res) => {
-  res.sendFile(path.join(distPath, "index.html"));
-});
+app.use((req: Request, res: Response) => {
+    res.sendFile(path.join(distPath, "index.html"));
+})
 
 app.listen(port, "0.0.0.0", () => {
     console.log("Servidor escutando!");
