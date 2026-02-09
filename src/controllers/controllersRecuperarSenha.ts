@@ -51,8 +51,8 @@ export const esqueciSenha = async (req: any, res: any) => {
                     <p>Este código expira em 1 hora.</p>
                 </div>
             `
-        }).catch(err => {
-            console.error('Erro', err);
+        }).then(() => {
+            console.log(email)
         })
         return res.json({ message: "Código de recuperação enviado!"})
     }catch(error){
