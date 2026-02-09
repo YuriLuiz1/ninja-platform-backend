@@ -40,7 +40,7 @@ export const esqueciSenha = async (req: any, res: any) => {
         const msg = {
           to: email,
           from: process.env.EMAIL_FROM!,
-          subject: "Recuperação de senha - Ninja Animes",
+          subject: "Código de verificação - Ninja Animes",
           html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #eee; padding: 20px; border-radius: 10px;">
               <div style="text-align: center; background-color: #333; padding: 10px; border-radius: 5px;">
