@@ -38,7 +38,7 @@ export const esqueciSenha = async (req: any, res: any) => {
             }
         });
 
-        transporter.sendMail({
+       transporter.sendMail({
             from: process.env.EMAIL_FROM,
             to: email,
             subject: 'Recuperação de Senha - Ninja Animes',
@@ -51,7 +51,9 @@ export const esqueciSenha = async (req: any, res: any) => {
                     <p>Este código expira em 1 hora.</p>
                 </div>
             `
-        });
+        }).catch(err => {
+            console.error('Erro', err);
+        })
         return res.json({ message: "Código de recuperação enviado!"})
     }catch(error){
         console.error(error);
