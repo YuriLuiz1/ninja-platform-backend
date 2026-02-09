@@ -46,6 +46,7 @@ export const esqueciSenha = async (req: any, res: any) => {
         }
 
         await sgMail.send(msg);
+
         return res.json({ message: "Código de recuperação enviado!"})
     }catch(error){
         console.error(error);
