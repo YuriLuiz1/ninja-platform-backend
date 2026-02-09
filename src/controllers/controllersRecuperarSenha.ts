@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 
 const transporter = nodemailer.createTransport({
     host: 'smtp.sendgrid.net',
-    port: 587,
+    port: 465,
     secure: false,
     auth: {
         user: 'apikey',
