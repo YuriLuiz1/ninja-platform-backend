@@ -38,7 +38,7 @@ export const esqueciSenha = async (req: any, res: any) => {
             }
         });
 
-        transporter.sendMail({
+        await transporter.sendMail({
             from: process.env.EMAIL_FROM,
             to: email,
             subject: 'Recuperação de Senha - Ninja Animes',
