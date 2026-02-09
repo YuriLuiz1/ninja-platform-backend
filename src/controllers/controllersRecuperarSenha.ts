@@ -38,12 +38,30 @@ export const esqueciSenha = async (req: any, res: any) => {
         });
 
         const msg = {
-            to: email,
-            from: process.env.EMAIL_FROM!,
-            subject: 'Recuperação de senha - Ninja Animes',
-            html: `<h1>Pediu troca de senha genin? aqui está!</h1>
-            <strong>Seu código é: ${code}</strong>`
-        }
+          to: email,
+          from: process.env.EMAIL_FROM!,
+          subject: "Recuperação de senha - Ninja Animes",
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #eee; padding: 20px; border-radius: 10px;">
+              <div style="text-align: center; background-color: #333; padding: 10px; border-radius: 5px;">
+                <h1 style="color: #fff; margin: 0;">Ninja Animes</h1>
+              </div>
+              <div style="padding: 20px 0; color: #333; line-height: 1.6;">
+                <h2 style="color: #333;">Olá, Ninja! 🥷</h2>
+                <p>Recebemos uma solicitação para redefinir a senha da sua conta.</p>
+                <p>Se você não fez essa solicitação, pode ignorar este e-mail com segurança.</p>
+                <p>Para prosseguir, utilize o código de verificação abaixo:</p>
+                <div style="background-color: #f4f4f4; border: 1px dashed #333; padding: 15px; text-align: center; font-size: 24px; font-weight: bold; letter-spacing: 5px; margin: 20px 0;">
+                  ${code}
+                </div>
+                <p>Este código é válido por apenas <strong>1 hora</strong>.</p>
+              </div>
+              <div style="text-align: center; font-size: 12px; color: #777; border-top: 1px solid #eee; padding-top: 10px;">
+                <p>Esta é uma mensagem automática, por favor não responda.</p>
+              </div>
+            </div>
+            `,
+        };
 
         await sgMail.send(msg);
 
