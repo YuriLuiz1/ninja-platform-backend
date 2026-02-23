@@ -5,8 +5,16 @@ import {
   sendRegister,
 } from "../controllers/controllersCadastro";
 import { validationUser } from "../controllers/controllersLogin";
-import { postAnimeDb, getAllAnimesDb, updateAnimeDb, getIdAnime } from "../controllers/controllersAnimesRomance";
-import { esqueciSenha, redifinirSenha } from "../controllers/controllersRecuperarSenha";
+import {
+  postAnimeDb,
+  getAllAnimesDb,
+  updateAnimeDb,
+  getIdAnime,
+} from "../controllers/controllersAnimesRomance";
+import {
+  esqueciSenha,
+  redifinirSenha,
+} from "../controllers/controllersRecuperarSenha";
 
 const router = Router();
 
@@ -21,7 +29,7 @@ router.post("/login", validationUser);
 router.post("/esqueci-senha", esqueciSenha);
 router.post("/redefinir-senha", redifinirSenha);
 
-//Rota dos animes 
+//Rota dos animes
 router.post("/send-anime", postAnimeDb);
 router.get("/get-anime", getAllAnimesDb);
 router.put("/atualiza-anime/:id", updateAnimeDb);
