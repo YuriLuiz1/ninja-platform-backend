@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Users {
@@ -13,23 +14,23 @@ model Users {
   email    String @unique
   password String
 
-  resetToken String?  
+  resetToken        String?
   resetTokenExpires DateTime?
 }
 
 model Animes {
-  id           Int     @id @default(autoincrement())
+  id           Int       @id @default(autoincrement())
   title        String
   average      String
-  synopisis    String  @db.Text
+  synopisis    String    @db.Text
   capeImage    String
-  opinionNinja String? @db.Text
+  opinionNinja String?   @db.Text
   categoryId   Int?
-  category Category? @relation(fields: [categoryId], references: [id])
+  category     Category? @relation(fields: [categoryId], references: [id])
 }
 
 model Category {
-  id   Int    @id @default(autoincrement())
-  name String @unique
+  id     Int      @id @default(autoincrement())
+  name   String   @unique
   animes Animes[]
 }
