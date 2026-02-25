@@ -10,6 +10,7 @@ import {
   getAllAnimesDb,
   updateAnimeDb,
   getIdAnime,
+  getCategoryIdAnime,
 } from "../controllers/controllersAnimesRomance";
 import {
   esqueciSenha,
@@ -34,5 +35,6 @@ router.post("/send-anime", postAnimeDb);
 router.get("/get-anime", getAllAnimesDb);
 router.put("/atualiza-anime/:id", updateAnimeDb);
 router.get("/animes/:id", getIdAnime);
+router.get("/animes/category/:id", getCategoryIdAnime);
 
 export default router;

@@ -2,8 +2,6 @@ import express from "express";
 import router from "./routes/routes";
 import dotenv from "dotenv";
 import cors from "cors";
-import path from "path";
-import type { Request, Response } from "express";
 
 dotenv.config();
 

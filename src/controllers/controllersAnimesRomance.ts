@@ -23,12 +23,10 @@ export async function postAnimeDb(req: Request, res: Response) {
 
     if (authorization === passAdmin) {
       if (!title || !average || !synopisis || !capeImage || !opinionNinja) {
-        return res
-          .status(401)
-          .json({
-            success: "false",
-            message: "Datas invalids or empty, please verify!",
-          });
+        return res.status(401).json({
+          success: "false",
+          message: "Datas invalids or empty, please verify!",
+        });
       }
 
       const dataAnime = await prisma.animes.create({
@@ -90,4 +88,16 @@ export async function getIdAnime(req: Request, res: Response) {
   if (!anime) return res.status(404).json({ error: "Anime not found!" });
 
   res.json(anime);
+}
+
+export async function getCategoryIdAnime(req: Request, res: Response) {
+  const { id } = req.params;
+
+  const anime = await prisma.animes.findMany({
+    where: { categoryId: Number(id) },
+  });
+
+  if (!anime) return res.status(404).json({ error: "Category not found!" });
+
+  res.status(200).json({ success: true, message: "Category found", anime });
 }
