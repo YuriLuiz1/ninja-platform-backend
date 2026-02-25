@@ -8,8 +8,14 @@ dotenv.config();
 const prisma = new PrismaClient();
 
 export async function postAnimeDb(req: Request, res: Response) {
-  const { title, average, synopisis, capeImage, opinionNinja }: IAnimes =
-    req.body;
+  const {
+    title,
+    average,
+    synopisis,
+    capeImage,
+    opinionNinja,
+    categoryId,
+  }: IAnimes = req.body;
   const authorization = req.get("Authorization");
   const passAdmin = process.env.PASS_SUPERADMIN;
 
@@ -36,6 +42,7 @@ export async function postAnimeDb(req: Request, res: Response) {
           synopisis,
           capeImage,
           opinionNinja,
+          categoryId,
         },
       });
       res.status(201).json({
