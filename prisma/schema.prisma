@@ -31,6 +31,8 @@ model Animes {
   Studios      String[]    @db.Text
   DurationEp   String?
   StreamingPlatforms     String[] @db.Text
+  DataLancamento Int?
+  SubCategorias String[]
   Temp         Int?
   category     Category? @relation(fields: [categoryId], references: [id])
 }

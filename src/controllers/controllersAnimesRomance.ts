@@ -16,6 +16,8 @@ export async function postAnimeDb(req: Request, res: Response) {
     opinionNinja,
     categoryId,
   }: IAnimes = req.body;
+
+  
   const authorization = req.get("Authorization");
   const passAdmin = process.env.PASS_SUPERADMIN;
 
