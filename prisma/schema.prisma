@@ -9,32 +9,31 @@ datasource db {
 }
 
 model Users {
-  id       Int    @id @default(autoincrement())
-  user     String
-  email    String @unique
-  password String
-
+  id                Int       @id @default(autoincrement())
+  user              String
+  email             String    @unique
+  password          String
   resetToken        String?
   resetTokenExpires DateTime?
 }
 
 model Animes {
-  id           Int       @id @default(autoincrement())
-  title        String
-  average      String
-  synopisis    String    @db.Text
-  capeImage    String
-  opinionNinja String?   @db.Text
-  categoryId   Int?
-  episodes     Int?
-  StatusFinished    Boolean?   @default(false)
-  Studios      String[]    @db.Text
-  DurationEp   String?
-  StreamingPlatforms     String[] @db.Text
-  DataLancamento Int?
-  SubCategorias String[]
-  Temp         Int?
-  category     Category? @relation(fields: [categoryId], references: [id])
+  id                 Int       @id @default(autoincrement())
+  title              String
+  average            String
+  synopisis          String
+  capeImage          String
+  opinionNinja       String?
+  categoryId         Int?
+  DurationEp         String?
+  StatusFinished     Boolean?  @default(false)
+  StreamingPlatforms String[]
+  Studios            String[]
+  Temp               Int?
+  episodes           Int?
+  DataLancamento     Int?
+  SubCategorias      String[]
+  category           Category? @relation(fields: [categoryId], references: [id])
 }
 
 model Category {

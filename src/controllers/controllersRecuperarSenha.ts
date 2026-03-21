@@ -1,30 +1,30 @@
 import { PrismaClient } from "@prisma/client";
-import nodemailer from 'nodemailer';
-import SMTPTransport from "nodemailer/lib/smtp-transport";
 import bcrypt from 'bcrypt';
-import sgMail from '@sendgrid/mail';
-
-sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
-
-if(!process.env.SENDGRID_API_KEY){
-    throw new Error('A variável de ambiente não está definida');
-}
-
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+import jwt from 'jsonwebtoken';
 
 const prisma = new PrismaClient();
 
+const RESET_SECRET = process.env.RESET_TOKEN_SECRET || 'ninja-reset-secret';
+
 export const esqueciSenha = async (req: any, res: any) => {
-    const { email } = req.body;
+    const { email, user: username } = req.body;
 
-    try{
-        const user = await prisma.users.findUnique({ where: { email } });
+    if (!email || !username) {
+        return res.status(400).json({ error: 'E-mail e nome de usuário são obrigatórios.' });
+    }
 
-        if (!user){
-            return res.status(404).json({ error: 'E-mail não encontrado na base Ninja.'})
+    try {
+        const user = await prisma.users.findFirst({ where: { email, user: username } });
+
+        if (!user) {
+            return res.status(404).json({ error: 'Credenciais não encontradas na base Ninja.' });
         }
 
-        const code = Math.floor(100000 + Math.random() * 900000).toString();
+        const token = jwt.sign(
+            { userId: user.id, email: user.email },
+            RESET_SECRET,
+            { expiresIn: '1h' }
+        );
 
         const expireAt = new Date();
         expireAt.setHours(expireAt.getHours() + 1);
@@ -32,62 +32,42 @@ export const esqueciSenha = async (req: any, res: any) => {
         await prisma.users.update({
             where: { email },
             data: {
-                resetToken: code,
+                resetToken: token,
                 resetTokenExpires: expireAt
             }
         });
 
-        const msg = {
-          to: email,
-          from: process.env.EMAIL_FROM!,
-          subject: "Código de verificação - Ninja Animes",
-          html: `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #eee; padding: 20px; border-radius: 10px;">
-              <div style="text-align: center; background-color: #333; padding: 10px; border-radius: 5px;">
-                <h1 style="color: #fff; margin: 0;">Ninja Animes</h1>
-              </div>
-              <div style="padding: 20px 0; color: #333; line-height: 1.6;">
-                <h2 style="color: #333;">Olá, Ninja! 🥷</h2>
-                <p>Recebemos uma solicitação para redefinir a senha da sua conta.</p>
-                <p>Se você não fez essa solicitação, pode ignorar este e-mail com segurança.</p>
-                <p>Para prosseguir, utilize o código de verificação abaixo:</p>
-                <div style="background-color: #f4f4f4; border: 1px dashed #333; padding: 15px; text-align: center; font-size: 24px; font-weight: bold; letter-spacing: 5px; margin: 20px 0;">
-                  ${code}
-                </div>
-                <p>Este código é válido por apenas <strong>1 hora</strong>.</p>
-              </div>
-              <div style="text-align: center; font-size: 12px; color: #777; border-top: 1px solid #eee; padding-top: 10px;">
-                <p>Esta é uma mensagem automática, por favor não responda.</p>
-              </div>
-            </div>
-            `,
-        };
-
-        await sgMail.send(msg);
-
-        return res.json({ message: "Código de recuperação enviado!"})
-    }catch(error){
+        return res.json({ resetToken: token });
+    } catch (error) {
         console.error(error);
-        return res.status(500).json({ error: 'Erro ao enviar código.' })
+        return res.status(500).json({ error: 'Erro ao gerar token de recuperação.' });
     }
-}
+};
 
 export const redifinirSenha = async (req: any, res: any) => {
-    const { email, code, newPassword } = req.body;
+    const { token, newPassword } = req.body;
 
-    try{
-        const user = await prisma.users.findUnique({ where: { email } });
+    try {
+        let payload: any;
 
-        if(!user) return res.status(400).json({ error: "Usuário não encontrado" });
-        if(user.resetToken !== code) return res.status(400).json({ error: "Código inválido"});
-        if(!user.resetTokenExpires || new Date() > user.resetTokenExpires){
-            return res.status(400).json({ error: 'O código expirou'});
+        try {
+            payload = jwt.verify(token, RESET_SECRET);
+        } catch {
+            return res.status(400).json({ error: 'Token inválido ou expirado.' });
+        }
+
+        const user = await prisma.users.findUnique({ where: { id: payload.userId } });
+
+        if (!user) return res.status(400).json({ error: 'Usuário não encontrado.' });
+        if (user.resetToken !== token) return res.status(400).json({ error: 'Token inválido.' });
+        if (!user.resetTokenExpires || new Date() > user.resetTokenExpires) {
+            return res.status(400).json({ error: 'Token expirado.' });
         }
 
         const hashedPassword = await bcrypt.hash(newPassword, 10);
 
         await prisma.users.update({
-            where: { email },
+            where: { id: payload.userId },
             data: {
                 password: hashedPassword,
                 resetToken: null,
@@ -96,7 +76,7 @@ export const redifinirSenha = async (req: any, res: any) => {
         });
 
         return res.json({ message: 'Senha alterada com sucesso!' });
-    }catch(error){
-        return res.status(500).json({ error: 'Erro ao redefinir senha.'});
+    } catch (error) {
+        return res.status(500).json({ error: 'Erro ao redefinir senha.' });
     }
 };
