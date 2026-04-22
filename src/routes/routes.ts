@@ -16,6 +16,12 @@ import {
   esqueciSenha,
   redifinirSenha,
 } from "../controllers/controllersRecuperarSenha";
+import {
+  getUserAnimeList,
+  getUserAnimeListByAnime,
+  removeAnimeFromUserList,
+  upsertAnimeInUserList,
+} from "../controllers/controllersUserAnimeList";
 
 const router = Router();
 
@@ -36,5 +42,12 @@ router.get("/get-anime", getAllAnimesDb);
 router.put("/atualiza-anime/:id", updateAnimeDb);
 router.get("/animes/:id", getIdAnime);
 router.get("/animes/category/:id", getCategoryIdAnime);
+router.get("/users/:userId/anime-lists", getUserAnimeList);
+router.get("/users/:userId/anime-lists/:animeId", getUserAnimeListByAnime);
+router.put("/users/:userId/anime-lists/:animeId", upsertAnimeInUserList);
+router.delete(
+  "/users/:userId/anime-lists/:animeId/:listType",
+  removeAnimeFromUserList,
+);
 
 export default router;
