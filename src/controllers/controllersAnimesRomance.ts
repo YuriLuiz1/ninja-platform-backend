@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import { IAnimes } from "../models/ModelAnimes";
 import dotenv from "dotenv";
 
@@ -89,14 +89,36 @@ export async function updateAnimeDb(req: Request, res: Response) {
 
 export async function getIdAnime(req: Request, res: Response) {
   const { id } = req.params;
+  const animeId = Number(id);
 
   const anime = await prisma.animes.findUnique({
-    where: { id: Number(id) },
+    where: { id: animeId },
   });
 
   if (!anime) return res.status(404).json({ error: "Anime not found!" });
 
-  res.json(anime);
+  const votes = await prisma.$queryRaw<
+    Array<{ listType: "LIKED" | "DISLIKED"; total: bigint }>
+  >(Prisma.sql`
+    SELECT "listType", COUNT(*)::bigint AS total
+    FROM "UserAnimeList"
+    WHERE "animeId" = ${animeId}
+      AND "listType" IN ('LIKED', 'DISLIKED')
+    GROUP BY "listType";
+  `);
+
+  const approvedGeninCount = Number(
+    votes.find((vote) => vote.listType === "LIKED")?.total ?? 0n,
+  );
+  const rejectedGeninCount = Number(
+    votes.find((vote) => vote.listType === "DISLIKED")?.total ?? 0n,
+  );
+
+  res.json({
+    ...anime,
+    approvedGeninCount,
+    rejectedGeninCount,
+  });
 }
 
 export async function getCategoryIdAnime(req: Request, res: Response) {
