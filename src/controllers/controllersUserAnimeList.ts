@@ -1,8 +1,7 @@
 import type { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
-const prismaAny = prisma as any;
 type AnimeListType = "WANT_TO_WATCH" | "WATCHED" | "LIKED" | "DISLIKED";
 
 const VALID_LIST_TYPES = new Set<AnimeListType>([
@@ -50,21 +49,24 @@ export async function upsertAnimeInUserList(req: Request, res: Response) {
       });
     }
 
-    const listItem = await prismaAny.userAnimeList.upsert({
-      where: {
-        userId_animeId_listType: {
-          userId,
-          animeId,
-          listType,
-        },
-      },
-      update: {},
-      create: {
-        userId,
-        animeId,
-        listType,
-      },
-    });
+    const rows = await prisma.$queryRaw<
+      Array<{
+        id: number;
+        userId: number;
+        animeId: number;
+        listType: AnimeListType;
+        createdAt: Date;
+        updatedAt: Date;
+      }>
+    >(Prisma.sql`
+      INSERT INTO "UserAnimeList" ("userId", "animeId", "listType", "updatedAt")
+      VALUES (${userId}, ${animeId}, CAST(${listType} AS "AnimeListType"), NOW())
+      ON CONFLICT ("userId", "animeId", "listType")
+      DO UPDATE SET "updatedAt" = NOW()
+      RETURNING "id", "userId", "animeId", "listType", "createdAt", "updatedAt";
+    `);
+
+    const listItem = rows[0];
 
     return res.status(200).json({
       success: true,
@@ -93,14 +95,17 @@ export async function removeAnimeFromUserList(req: Request, res: Response) {
       });
     }
 
-    const deleted = await prismaAny.userAnimeList.deleteMany({
-      where: { userId, animeId, listType },
-    });
+    const deleted = await prisma.$executeRaw(Prisma.sql`
+      DELETE FROM "UserAnimeList"
+      WHERE "userId" = ${userId}
+        AND "animeId" = ${animeId}
+        AND "listType" = CAST(${listType} AS "AnimeListType");
+    `);
 
     return res.status(200).json({
       success: true,
       message: "Anime removido da lista do usuário.",
-      removedCount: deleted.count,
+      removedCount: deleted,
     });
   } catch (error) {
     console.error("Error removing anime from list:", error);
@@ -123,10 +128,14 @@ export async function getUserAnimeListByAnime(req: Request, res: Response) {
       });
     }
 
-    const listItems = await prismaAny.userAnimeList.findMany({
-      where: { userId, animeId },
-      select: { listType: true },
-    });
+    const listItems = await prisma.$queryRaw<Array<{ listType: AnimeListType }>>(
+      Prisma.sql`
+        SELECT "listType"
+        FROM "UserAnimeList"
+        WHERE "userId" = ${userId}
+          AND "animeId" = ${animeId};
+      `,
+    );
 
     return res.status(200).json({
       success: true,
@@ -152,21 +161,42 @@ export async function getUserAnimeList(req: Request, res: Response) {
       });
     }
 
-    const listItems = await prismaAny.userAnimeList.findMany({
-      where: { userId },
-      include: {
+    const listItems = await prisma.$queryRaw<
+      Array<{
+        id: number;
+        userId: number;
+        animeId: number;
+        listType: AnimeListType;
+        createdAt: Date;
+        updatedAt: Date;
         anime: {
-          select: {
-            id: true,
-            title: true,
-            capeImage: true,
-            average: true,
-            categoryId: true,
-          },
-        },
-      },
-      orderBy: { createdAt: "desc" },
-    });
+          id: number;
+          title: string;
+          capeImage: string;
+          average: string;
+          categoryId: number | null;
+        };
+      }>
+    >(Prisma.sql`
+      SELECT
+        ual."id",
+        ual."userId",
+        ual."animeId",
+        ual."listType",
+        ual."createdAt",
+        ual."updatedAt",
+        json_build_object(
+          'id', a."id",
+          'title', a."title",
+          'capeImage', a."capeImage",
+          'average', a."average",
+          'categoryId', a."categoryId"
+        ) AS "anime"
+      FROM "UserAnimeList" ual
+      INNER JOIN "Animes" a ON a."id" = ual."animeId"
+      WHERE ual."userId" = ${userId}
+      ORDER BY ual."createdAt" DESC;
+    `);
 
     return res.status(200).json({
       success: true,
