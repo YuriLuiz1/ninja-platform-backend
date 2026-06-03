@@ -15,6 +15,14 @@ export async function postAnimeDb(req: Request, res: Response) {
     capeImage,
     opinionNinja,
     categoryId,
+    DurationEp,
+    StatusFinished,
+    StreamingPlatforms,
+    Studios,
+    Temp,
+    episodes,
+    DataLancamento,
+    SubCategories
   }: IAnimes = req.body;
 
   
@@ -45,6 +53,14 @@ export async function postAnimeDb(req: Request, res: Response) {
           capeImage,
           opinionNinja,
           categoryId,
+          DurationEp,
+          StatusFinished,
+          StreamingPlatforms,
+          Studios,
+          Temp,
+          episodes,
+          DataLancamento,
+          SubCategories
         },
       });
       res.status(201).json({
