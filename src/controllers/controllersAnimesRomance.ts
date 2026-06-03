@@ -22,7 +22,7 @@ export async function postAnimeDb(req: Request, res: Response) {
     Temp,
     episodes,
     DataLancamento,
-    SubCategories
+    SubCategorias
   }: IAnimes = req.body;
 
   
@@ -60,7 +60,7 @@ export async function postAnimeDb(req: Request, res: Response) {
           Temp,
           episodes,
           DataLancamento,
-          SubCategories
+          SubCategorias
         },
       });
       res.status(201).json({

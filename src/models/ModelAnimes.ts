@@ -12,5 +12,5 @@ export interface IAnimes{
     Temp: number,
     episodes: number,
     DataLancamento: number,
-    SubCategories: string[]
+    SubCategorias: string[]
 }
